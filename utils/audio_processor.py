@@ -5,6 +5,7 @@ import os
 DOWNLOAD_DIR = "downloads"
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
+#this method downloads the audio from youtube and saves it as a wav file in the downloads folder
 def download_yt_audio(url: str)-> str:
     output_path = os.path.join(DOWNLOAD_DIR, "%(title)s.%(ext)s")
     ydl_opts = {
@@ -24,6 +25,7 @@ def download_yt_audio(url: str)-> str:
     return filename
 data =download_yt_audio("https://www.youtube.com/watch?v=v1t4MTqdfyI&list=RDv1t4MTqdfyI&start_radio=1")
 
+#this method converts any audio or video file to wav format using pydub
 def convert_to_wav(input_path: str)-> str:
     """Convert any audio or video file to WAV format using pydub."""
     output_path = os.path.splitext(input_path)[0] + "_converted.wav"
