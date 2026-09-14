@@ -23,7 +23,7 @@ def download_yt_audio(url: str)-> str:
         info = ydl.extract_info(url, download=True)
         filename = ydl.prepare_filename(info).replace(".webm", ".wav").replace(".m4a", ".wav")
     return filename
-data =download_yt_audio("https://www.youtube.com/watch?v=v1t4MTqdfyI&list=RDv1t4MTqdfyI&start_radio=1")
+
 
 #this method converts any audio or video file to wav format using pydub
 def convert_to_wav(input_path: str)-> str:
@@ -34,4 +34,29 @@ def convert_to_wav(input_path: str)-> str:
     audio.export(output_path, format="wav")
     return output_path
 
-print(convert_to_wav(data))
+
+
+def chunk_audio(wav_path: str, chunk_length: int = 1)-> list:
+    """Chunk a WAV audio file into smaller segments of specified length (in seconds)."""
+    audio = AudioSegment.from_wav(wav_path)
+    chunk_size = chunk_length * 60 * 1000  # Convert seconds to milliseconds
+    chunks = []
+    for i, start in enumerate(range(0, len(audio), chunk_size)):
+        chunk = audio[start:start + chunk_size]
+        chunk_path = f"{wav_path}_chunk_{i}.wav"
+        chunk.export(chunk_path, format="wav")
+        chunks.append(chunk_path)
+    return chunks
+
+def process_audio(src: str)-> list:
+    if src.startswith("http://") or src.startswith("https://"):
+        print("Detected YouTube URL. Downloading audio...")
+        wav_path = download_yt_audio(src)
+    else:
+        print("Detected local file. Converting to WAV...")
+        wav_path = convert_to_wav(src)
+    print(f"Processing audio file: {wav_path}")
+    chunks = chunk_audio(wav_path)
+    print(f"Audio file has been chunked into {len(chunks)} segments.")
+    return chunks
+
